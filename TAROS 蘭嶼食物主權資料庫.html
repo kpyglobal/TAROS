@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TAROS 蘭嶼食物主權資料庫</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --lime:#F3F5F2;        /* 石灰白 */
+  --paper:#FFFFFF;
+  --soot:#1E1B19;        /* 煙炱黑 */
+  --ink-soft:#4C4744;
+  --red:#A8322B;         /* 船紅 */
+  --kuroshio:#124B5A;    /* 黑潮藍 */
+  --ochre:#B97A1E;       /* 曬魚季的陽光 */
+  --taro:#4F6B3A;        /* 芋葉綠 */
+  --line:#D8DCD7;
+  --chip:#E7EBE6;
+  --focus:#124B5A;
+  --lagoon:#1C8C88;
+  --deep:#0A2E3D;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --lime:#151816;--paper:#1D211F;--soot:#ECEAE6;--ink-soft:#B9B4AF;
+    --red:#E0675C;--kuroshio:#6FB3C4;--ochre:#E0A54A;--taro:#9CBF7E;
+    --line:#333A36;--chip:#28302C;--focus:#6FB3C4;--lagoon:#5CC6C0;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --lagoon:#5CC6C0;
+  --lime:#151816;--paper:#1D211F;--soot:#ECEAE6;--ink-soft:#B9B4AF;
+  --red:#E0675C;--kuroshio:#6FB3C4;--ochre:#E0A54A;--taro:#9CBF7E;
+  --line:#333A36;--chip:#28302C;--focus:#6FB3C4;color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 72px);scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--lime);color:var(--soot);font-family:var(--sans);font-size:17px;line-height:1.75}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+img,svg{max-width:100%}
+a{color:var(--kuroshio)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+h1,h2,h3{font-family:var(--serif);line-height:1.3;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+/* nav */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--paper);border-bottom:2px solid var(--soot)}
+.top .wrap{display:flex;align-items:center;gap:20px;min-height:62px}
+.brand{font-family:var(--serif);font-weight:900;font-size:20px;text-decoration:none;color:var(--soot);white-space:nowrap}
+.brand span{color:var(--red)}
+nav.sections{display:flex;gap:4px;overflow-x:auto;flex:1;scrollbar-width:none}
+nav.sections a{text-decoration:none;color:var(--ink-soft);font-size:15px;padding:6px 10px;border-radius:4px;white-space:nowrap}
+nav.sections a:hover{background:var(--chip);color:var(--soot)}
+.langs{display:flex;border:1.5px solid var(--soot);border-radius:4px;overflow:hidden;flex-shrink:0}
+.langs button{font:inherit;font-size:14px;background:transparent;color:var(--soot);border:0;padding:5px 11px;cursor:pointer}
+.langs button+button{border-left:1.5px solid var(--soot)}
+.langs button[aria-pressed="true"]{background:var(--soot);color:var(--paper)}
+@media (max-width:820px){nav.sections{display:none}}
+
+/* hero */
+.hero{--soot:#F2F7F6;--ink-soft:#A9C7CC;--paper:#0A2E3D;--line:rgba(255,255,255,.18);--focus:#8FE3DC;
+  background:radial-gradient(120% 90% at 85% 10%,#1C6E78 0%,#0E4554 45%,#0A2E3D 100%);color:var(--soot);position:relative;overflow:hidden}
+.hero .wrap{position:relative;z-index:1}
+.hero .swell{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:90px;z-index:0;display:block}
+.hero .stars{position:absolute;inset:0;z-index:0;opacity:.55}
+.greet{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 18px;font-size:15px;color:#8FE3DC;font-family:var(--serif)}
+.greet span{white-space:nowrap}
+.hero .wrap{display:grid;grid-template-columns:1.1fr 1fr;gap:48px;align-items:center;padding-top:64px;padding-bottom:120px}
+.hero h1{font-size:clamp(34px,5vw,58px);font-weight:900;letter-spacing:.02em}
+.hero .lede{font-size:19px;color:var(--ink-soft);max-width:34em;margin:20px 0 28px}
+.now{border-left:6px solid var(--season,var(--kuroshio));padding:10px 0 10px 16px;margin-bottom:28px}
+.now strong{font-family:var(--serif);font-size:24px;display:block}
+.now small{color:var(--ink-soft);font-size:15px}
+.btns{display:flex;flex-wrap:wrap;gap:12px}
+.btn{font:inherit;font-weight:700;font-size:16px;padding:11px 20px;border-radius:4px;border:2px solid var(--soot);background:var(--soot);color:var(--paper);cursor:pointer;text-decoration:none}
+.btn.ghost{background:transparent;color:var(--soot)}
+.wheel-box{position:relative}
+.wheel-box svg{display:block;width:100%;height:auto}
+.wheel-seg{cursor:pointer;transition:opacity .2s}
+.wheel-seg:hover,.wheel-seg:focus-visible{opacity:.82}
+.wheel-cap{text-align:center;font-size:14px;color:var(--ink-soft);margin-top:8px}
+@media (max-width:820px){.hero .wrap{grid-template-columns:1fr;gap:32px}.wheel-box{max-width:380px;margin:0 auto}}
+
+section.block{padding:72px 0;border-bottom:1px solid var(--line)}
+.head{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap;margin-bottom:32px}
+.head h2{font-size:clamp(28px,3.4vw,38px);font-weight:900}
+.head h2::before{content:"";display:block;width:72px;height:12px;margin-bottom:14px;background:var(--lagoon);-webkit-mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2072%2012%27%3E%3Cpath%20d%3D%27M0%206%20Q9%200%2018%206%20T36%206%20T54%206%20T72%206%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%273%27/%3E%3C/svg%3E") no-repeat center/contain;mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2072%2012%27%3E%3Cpath%20d%3D%27M0%206%20Q9%200%2018%206%20T36%206%20T54%206%20T72%206%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%273%27/%3E%3C/svg%3E") no-repeat center/contain}
+footer::before{content:"";display:block;height:14px;margin-bottom:28px;background:var(--lagoon);opacity:.7;-webkit-mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2040%2014%27%3E%3Cpath%20d%3D%27M0%207%20Q10%200%2020%207%20T40%207%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%272.5%27/%3E%3C/svg%3E") repeat-x left center/40px 14px;mask:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2040%2014%27%3E%3Cpath%20d%3D%27M0%207%20Q10%200%2020%207%20T40%207%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%272.5%27/%3E%3C/svg%3E") repeat-x left center/40px 14px}
+.head p{max-width:40em;color:var(--ink-soft);margin:8px 0 0}
+
+/* TAROS */
+.taros{display:grid;grid-template-columns:repeat(5,1fr);border-top:2px solid var(--soot);border-bottom:2px solid var(--soot)}
+.pillar{padding:22px 18px 26px;border-right:1px solid var(--line)}
+.pillar:last-child{border-right:0}
+.pillar .L{font-family:var(--serif);font-size:64px;font-weight:900;line-height:1;color:var(--red)}
+.pillar:nth-child(even) .L{color:var(--lagoon)}
+.pillar h3{font-size:18px;margin:10px 0 2px}
+.pillar .en{font-size:13px;color:var(--ink-soft);margin-bottom:10px}
+.pillar p{font-size:15px;margin:0;line-height:1.7}
+@media (max-width:960px){.taros{grid-template-columns:1fr 1fr}.pillar{border-bottom:1px solid var(--line)}}
+@media (max-width:560px){.taros{grid-template-columns:1fr}}
+
+/* database */
+.search{display:flex;gap:10px;margin-bottom:16px}
+.search input{flex:1;font:inherit;padding:12px 14px;border:2px solid var(--soot);border-radius:4px;background:var(--paper);color:var(--soot)}
+.filters{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.frow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.frow .lab{font-size:14px;color:var(--ink-soft);min-width:4.5em}
+.chip{font:inherit;font-size:14px;padding:4px 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--paper);color:var(--soot);cursor:pointer}
+.chip[aria-pressed="true"]{border-color:var(--soot);background:var(--soot);color:var(--paper)}
+.count{font-size:14px;color:var(--ink-soft);margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.food{text-align:left;font:inherit;color:inherit;background:var(--paper);border:1px solid var(--line);border-top:5px solid var(--cat,var(--kuroshio));border-radius:2px;padding:16px 18px 18px;cursor:pointer;display:flex;flex-direction:column;gap:6px}
+.food:hover{border-color:var(--soot);border-top-color:var(--cat)}
+.food .tao{font-family:var(--serif);font-size:22px;font-weight:900}
+.food .sub{font-size:14px;color:var(--ink-soft)}
+.food p{font-size:15px;margin:4px 0 0;line-height:1.65;color:var(--ink-soft)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:8px}
+.tag{font-size:12px;padding:1px 8px;border-radius:3px;background:var(--chip);color:var(--soot)}
+.tag.lit{background:transparent;border:1px solid var(--kuroshio);color:var(--kuroshio)}
+.tag.int{background:transparent;border:1px solid var(--taro);color:var(--taro)}
+.tag.verify{background:transparent;border:1px dashed var(--red);color:var(--red)}
+.empty{padding:32px;border:1.5px dashed var(--line);text-align:center;color:var(--ink-soft)}
+
+dialog{max-width:640px;width:calc(100% - 32px);border:2px solid var(--soot);border-radius:4px;padding:0;background:var(--paper);color:var(--soot)}
+dialog::backdrop{background:rgba(20,18,16,.55)}
+.dlg{padding:28px 28px 24px}
+.dlg h3{font-size:30px;font-weight:900}
+.dlg dl{display:grid;grid-template-columns:7em 1fr;gap:8px 16px;margin:20px 0;font-size:15px}
+.dlg dt{color:var(--ink-soft)}
+.dlg dd{margin:0}
+.dlg .close{float:right;font:inherit;background:none;border:1.5px solid var(--soot);color:var(--soot);border-radius:4px;padding:4px 12px;cursor:pointer}
+.srcs{border-top:1px solid var(--line);padding-top:14px;font-size:14px}
+.srcs li{margin-bottom:4px}
+
+/* recipes */
+.recipes{display:grid;grid-template-columns:260px 1fr;gap:32px;align-items:start}
+.rlist{display:flex;flex-direction:column;border-top:2px solid var(--soot)}
+.rlist button{font:inherit;text-align:left;padding:14px 4px;border:0;border-bottom:1px solid var(--line);background:none;color:var(--soot);cursor:pointer}
+.rlist button[aria-current="true"]{font-weight:700;color:var(--red)}
+.rcard{background:var(--paper);border:1px solid var(--line);padding:28px}
+.rcard h3{font-size:28px;font-weight:900}
+.rcard .meta{color:var(--ink-soft);font-size:15px;margin:6px 0 18px}
+.rcard h4{font-size:16px;margin:20px 0 8px}
+.rcard ol{padding-left:1.4em;margin:0}
+.rcard ol li{margin-bottom:6px}
+.note{font-size:14px;border-left:4px solid var(--ochre);padding:8px 12px;background:var(--chip);margin-top:18px}
+@media (max-width:760px){.recipes{grid-template-columns:1fr}}
+
+/* villages */
+.villages{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:2px solid var(--soot)}
+.vil{padding:20px 18px 22px;border-bottom:1px solid var(--line);border-right:1px solid var(--line)}
+.vil:nth-child(3n){border-right:0}
+.vil .tn{font-family:var(--serif);font-size:24px;font-weight:900}
+.vil .zn{font-size:15px;color:var(--ink-soft)}
+.vil .st{display:inline-block;margin-top:10px;font-size:13px;padding:2px 10px;border-radius:999px;color:#fff;background:var(--st)}
+.vil p{font-size:15px;margin:10px 0 0}
+@media (max-width:760px){.villages{grid-template-columns:1fr 1fr}.vil:nth-child(3n){border-right:1px solid var(--line)}.vil:nth-child(2n){border-right:0}}
+
+/* visit */
+.rules{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.rule{background:var(--paper);border:1px solid var(--line);padding:18px 20px}
+.rule b{display:block;font-size:16px;margin-bottom:4px}
+.rule.no{border-left:5px solid var(--red)}
+.rule.yes{border-left:5px solid var(--taro)}
+.rule p{margin:0;font-size:15px;color:var(--ink-soft)}
+@media (max-width:700px){.rules{grid-template-columns:1fr}}
+
+/* game */
+.game{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center;background:var(--soot);color:var(--paper);padding:36px;border-radius:2px}
+.game h3{font-size:30px;font-weight:900;color:var(--paper)}
+.game p{color:var(--paper);opacity:.85}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.role{border:1px solid var(--ink-soft);padding:14px;font-size:15px}
+a.role{display:block;color:var(--paper);text-decoration:none}
+a.role:hover{border-color:var(--paper);border-width:2px;padding:13px}
+a.role em{display:block;font-style:normal;font-size:13px;margin-top:6px;opacity:.8}
+.gamelink{display:inline-block;margin-top:8px;font-weight:700}
+.role b{display:block;font-family:var(--serif);font-size:17px}
+.game .btn{background:var(--paper);color:var(--soot);border-color:var(--paper)}
+@media (max-width:760px){.game{grid-template-columns:1fr;padding:24px}}
+
+/* pacific */
+.scroll{overflow-x:auto;border:1px solid var(--line);background:var(--paper)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:15px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:700;background:var(--chip)}
+td.w{font-family:var(--serif);font-weight:900;font-size:18px}
+.partners{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:28px}
+.partner{border-top:3px solid var(--kuroshio);padding-top:12px}
+.partner h3{font-size:19px}
+.partner p{font-size:15px;color:var(--ink-soft);margin:6px 0 0}
+
+/* voyage map */
+.voyage{display:grid;grid-template-columns:1.7fr 1fr;background:var(--deep);color:#F2F7F6;border-radius:2px;overflow:hidden}
+.voyage svg{display:block;width:100%;height:auto}
+.isle{cursor:pointer}
+.isle circle.dot{fill:#F2F7F6;stroke:var(--deep);stroke-width:2}
+.isle.on circle.dot{fill:#F4B860}
+.isle circle.halo{fill:none;stroke:#8FE3DC;stroke-width:1.5;opacity:0}
+.isle.on circle.halo,.isle:hover circle.halo,.isle:focus-visible circle.halo{opacity:1}
+.isle:focus{outline:none}
+.isle text{fill:#CFE7EA;font-size:15px}
+.isle.on text{fill:#F4B860;font-weight:700}
+.vpanel{padding:28px 26px;border-left:1px solid rgba(255,255,255,.15)}
+.vpanel h3{font-size:26px;font-weight:900;color:#F2F7F6}
+.vpanel .who{color:#8FE3DC;font-size:15px;margin:4px 0 14px}
+.vpanel p{font-size:15px;color:#DCEBEC;margin:0 0 12px}
+.vpanel .foods{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.vpanel .foods span{font-size:13px;padding:2px 10px;border-radius:999px;border:1px solid #8FE3DC;color:#8FE3DC}
+.vpanel small{display:block;color:#A9C7CC;font-size:13px;border-top:1px solid rgba(255,255,255,.15);padding-top:10px}
+.vhint{font-size:14px;color:var(--ink-soft);margin-top:10px}
+.hauofa{font-family:var(--serif);font-size:clamp(20px,2.4vw,26px);line-height:1.6;max-width:36em;border-left:5px solid var(--lagoon);padding-left:18px;margin:0 0 32px}
+.hauofa small{display:block;font-family:var(--sans);font-size:14px;color:var(--ink-soft);margin-top:6px}
+@media (max-width:860px){.voyage{grid-template-columns:1fr}.vpanel{border-left:0;border-top:1px solid rgba(255,255,255,.15)}}
+
+/* peoples */
+.peoples{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.ppl{padding:12px 14px;border:1px solid var(--line);background:var(--paper)}
+.ppl.on{border:2px solid var(--red)}
+.ppl b{display:block;font-size:16px}
+.ppl span{font-size:13px;color:var(--ink-soft)}
+.ppl em{font-style:normal;font-size:12px;display:block;margin-top:4px;color:var(--ink-soft)}
+.ppl.on em{color:var(--red);font-weight:700}
+.austro{margin-top:28px;display:flex;flex-wrap:wrap;gap:8px}
+
+/* research */
+.method{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.method h3{font-size:20px;margin-bottom:6px}
+.method p{font-size:15px;margin:0;color:var(--ink-soft)}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+.steps li{counter-increment:s;padding-left:2.2em;position:relative;margin-bottom:10px;font-size:15px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:1.6em;height:1.6em;border-radius:50%;background:var(--soot);color:var(--paper);font-size:13px;display:grid;place-items:center}
+@media (max-width:760px){.method{grid-template-columns:1fr}}
+
+footer{padding:40px 0 56px;font-size:14px;color:var(--ink-soft)}
+
+/* chat */
+.chat-fab{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:30;font:inherit;font-weight:700;background:var(--red);color:#fff;border:0;border-radius:999px;padding:13px 20px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.chat{position:fixed;right:20px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:30;width:min(400px,calc(100vw - 40px));height:min(560px,calc(100vh - 140px));background:var(--paper);border:2px solid var(--soot);border-radius:4px;display:none;flex-direction:column}
+.chat.open{display:flex}
+.chat-h{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.chat-h b{font-family:var(--serif)}
+.chat-h button{font:inherit;font-size:14px;background:none;border:1.5px solid var(--soot);color:var(--soot);border-radius:4px;padding:2px 10px;cursor:pointer}
+.msgs{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;font-size:15px}
+.m{max-width:88%;padding:9px 12px;border-radius:4px;white-space:pre-wrap;line-height:1.65}
+.m.u{align-self:flex-end;background:var(--soot);color:var(--paper)}
+.m.a{align-self:flex-start;background:var(--chip);color:var(--soot)}
+.sugs{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 10px}
+.chat form{display:flex;border-top:1px solid var(--line)}
+.chat input{flex:1;font:inherit;font-size:15px;padding:12px 14px;border:0;background:transparent;color:var(--soot)}
+.chat form button{font:inherit;font-weight:700;border:0;background:var(--soot);color:var(--paper);padding:0 18px;cursor:pointer}
+.chat .disc{font-size:12px;color:var(--ink-soft);padding:6px 16px 8px;border-top:1px solid var(--line)}
+.taobar{display:none;background:var(--ochre);color:#1E1B19;font-size:14px;text-align:center;padding:6px 16px}
+.taobar.show{display:block}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top">TAROS <span>·</span> Pongso no Tao</a>
+    <nav class="sections" aria-label="Sections">
+      <a href="#taros" data-i="navTaros"></a>
+      <a href="#pacific" data-i="navPacific"></a>
+      <a href="#database" data-i="navDb"></a>
+      <a href="#recipes" data-i="navRecipes"></a>
+      <a href="#villages" data-i="navVillages"></a>
+      <a href="#visit" data-i="navVisit"></a>
+      <a href="#research" data-i="navResearch"></a>
+    </nav>
+    <div class="langs" role="group" aria-label="Language">
+      <button data-lang="zh" aria-pressed="true">中文</button>
+      <button data-lang="en" aria-pressed="false">EN</button>
+      <button data-lang="tao" aria-pressed="false">Tao</button>
+    </div>
+  </div>
+</header>
+<div class="taobar" id="taobar" data-i="taoBar"></div>
+
+<main id="top">
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <p class="greet" aria-label="Pacific greetings"><span>Aloha</span><span>Talofa</span><span>Bula</span><span>Kia ora</span><span>Mālō e lelei</span><span>Håfa adai</span></p>
+      <h1 data-i="heroTitle"></h1>
+      <p class="lede" data-i="heroLede"></p>
+      <div class="now" id="now"><strong id="nowTitle"></strong><small id="nowSub"></small></div>
+      <div class="btns">
+        <a class="btn" href="#database" data-i="heroBtn1"></a>
+        <a class="btn ghost" href="#recipes" data-i="heroBtn2"></a>
+      </div>
+    </div>
+    <div class="wheel-box">
+      <svg id="wheel" viewBox="0 0 400 400" role="group" aria-label="Tao seasonal calendar"></svg>
+      <div class="wheel-cap" data-i="wheelCap"></div>
+    </div>
+  </div>
+  <svg class="stars" id="stars" aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 1000 600"></svg>
+  <svg class="swell" aria-hidden="true" viewBox="0 0 1440 90" preserveAspectRatio="none">
+    <path d="M0 40 C180 10 360 70 540 40 S900 10 1080 40 1300 60 1440 34 V90 H0Z" fill="#1C8C88" opacity=".35"/>
+    <path d="M0 58 C200 30 380 84 600 56 S960 30 1160 58 1340 70 1440 52 V90 H0Z" fill="#8FE3DC" opacity=".25"/>
+    <path d="M0 72 C220 52 420 92 660 70 S1020 54 1220 72 1380 80 1440 70 V90 H0Z" fill="var(--lime)"/>
+  </svg>
+</section>
+
+<section class="block" id="taros">
+  <div class="wrap">
+    <div class="head"><div><h2 data-i="tarosTitle"></h2><p data-i="tarosLede"></p></div></div>
+    <div class="taros" id="tarosGrid"></div>
+  </div>
+</section>
+
+<section class="block" id="pacific">
+  <div class="wrap">
+    <div class="head"><div><h2 data-i="pacTitle"></h2><p data-i="pacLede"></p></div></div>
+    <p class="hauofa"><span data-i="hauofa"></span><small data-i="hauofaSrc"></small></p>
+    <div class="voyage"><svg id="vmap" viewBox="0 0 1000 540" role="group" aria-label="Pacific voyaging map"></svg><div class="vpanel" id="vpanel" aria-live="polite"></div></div>
+    <p class="vhint" data-i="vHint"></p>
+    <h3 style="font-size:22px;margin:40px 0 14px" data-i="wordsTitle"></h3>
+    <div class="scroll"><table id="words"></table></div>
+  </div>
+</section>
+
+<section class="block" id="database">
+  <div class="wrap">
+    <div class="head"><div><h2 data-i="dbTitle"></h2><p data-i="dbLede"></p></div></div>
+    <div class="search"><input id="q" type="search" autocomplete="off"></div>
+    <div class="filters" id="filters"></div>
+    <div class="count" id="count" aria-live="polite"></div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<section class="block" id="recipes">
+  <div class="wrap">
+    <div class="head"><div><h2 data-i="recTitle"></h2><p data-i="recLede"></p></div></div>
+    <div class="recipes">
+      <div class="rlist" id="rlist"></div>
+      <article class="rcard" id="rcard" aria-live="polite"></article>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="villages">
+  <div class="wrap">
+    <div class="head"><div><h2 data-i="vilTitle"></h2><p data-i="vilLede"></p></div></div>
+    <div class="villages" id="vilGrid"></div>
+  </div>
+</section>
+
+<section class="block" id="visit">
+  <div class="wrap">
+    <div class="head"><div><h2 data-i="visitTitle"></h2><p data-i="visitLede"></p></div></div>
+    <div class="rules" id="rules"></div>
+  </div>
+</section>
+
+<section class="block" id="game">
+  <div class="wrap">
+    <div class="game">
+      <div>
+        <h3 data-i="gameTitle"></h3>
+        <p data-i="gameLede"></p>
+        <a class="btn" href="https://claude.ai/artifact/Hk3pXi1bKbNeKcVk3j9ach" target="_blank" rel="noopener" id="gameBtn" data-i="gameBtn"></a>
+      </div>
+      <div class="roles" id="roles"></div>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="block" id="peoples">
+  <div class="wrap">
+    <div class="head"><div><h2 data-i="pplTitle"></h2><p data-i="pplLede"></p></div></div>
+    <div class="peoples" id="pplGrid"></div>
+    <div class="austro" id="austro"></div>
+  </div>
+</section>
+
+<section class="block" id="research">
+  <div class="wrap">
+    <div class="head"><div><h2 data-i="resTitle"></h2><p data-i="resLede"></p></div></div>
+    <div class="method" id="method"></div>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap" data-i="footer"></div></footer>
+
+<dialog id="dlg"><div class="dlg" id="dlgBody"></div></dialog>
+
+<button class="chat-fab" id="chatFab" hidden data-i="chatFab"></button>
+<div class="chat" id="chat" role="dialog" aria-label="Food assistant">
+  <div class="chat-h"><b data-i="chatTitle"></b><button id="chatClose" data-i="close"></button></div>
+  <div class="msgs" id="msgs"></div>
+  <div class="sugs" id="sugs"></div>
+  <form id="chatForm"><input id="chatIn" autocomplete="off"><button data-i="send"></button></form>
+  <div class="disc" data-i="chatDisc"></div>
+</div>
+
+<script>
+/* ============ 資料（雛形：標示待確認，待族人審定） ============ */
+const VERIFY = {zh:"待族人確認", en:"To be verified"};
+const PENDING_TAO = "【族語待補】";
+
+const SEASONS = {
+  rayon:{tao:"Rayon", zh:"飛魚季", en:"Flying fish season", months:[2,3,4,5,6], color:"var(--red)",
+    zhd:"捕飛魚、處理與曬飛魚。禁忌最多，旅人行動限制最嚴格。", end:"Catching, processing and drying flying fish. The season with the most taboos and the strictest visitor limits."},
+  teyteyka:{tao:"Teyteyka", zh:"飛魚結束期", en:"End of flying fish season", months:[7,8,9,10], color:"var(--ochre)",
+    zhd:"收藏飛魚乾，進行其他漁撈，也是陸蟹活動的季節。", end:"Storing dried flying fish, other fishing, and land crab season."},
+  amiyan:{tao:"Amiyan", zh:"等待飛魚期", en:"Waiting for flying fish", months:[11,12,1], color:"var(--kuroshio)",
+    zhd:"農耕、整地、造船，食用存糧。", end:"Farming, preparing fields, building boats, and living on stored food."}
+};
+
+const CATS = {
+  sea:{zh:"海洋", en:"Ocean", color:"var(--kuroshio)"},
+  tide:{zh:"潮間帶", en:"Intertidal", color:"var(--ochre)"},
+  land:{zh:"土地", en:"Land", color:"var(--taro)"},
+  stored:{zh:"保存食物", en:"Preserved", color:"var(--red)"}
+};
+const ROLES = {
+  m:{zh:"男性", en:"Men"}, f:{zh:"女性", en:"Women"}, both:{zh:"男女分工合作", en:"Shared, divided by task"}
+};
+
+const FOODS = [
+ {id:"alibangbang", tao:"alibangbang", zh:"飛魚", en:"Flying fish", cat:"sea", seasons:["rayon"], role:"both",
+  get:{zh:"男性划拼板舟出海捕撈；女性處理、分類與曬魚。", en:"Men catch them from tatala boats; women process, sort and dry them."},
+  eat:{zh:"依種類與時節有不同規範", en:"Rules differ by species and time"},
+  d:{zh:"達悟族最核心的季節性食物，飛魚季的開始與結束組織了一整年的生活與飲食。不同種類的飛魚有不同名稱與地位。", en:"The central seasonal food of the Tao. The start and end of the flying fish season organize the whole year. Different species carry different names and status."},
+  taboo:{zh:"飛魚季期間有許多處理、烹煮與食用的規矩，各部落細節不同。", en:"Many rules govern handling, cooking and eating during the season, varying by village."},
+  src:["lit","int"], verify:true, game:true},
+ {id:"dried", tao:PENDING_TAO, zh:"飛魚乾", en:"Dried flying fish", cat:"stored", seasons:["rayon","teyteyka"], role:"f",
+  get:{zh:"女性負責曬製與保存。", en:"Women dry and store them."},
+  eat:{zh:"家庭共食；過了特定時間點後剩餘飛魚乾不再食用", en:"Shared by the household; leftovers are not eaten after a set point in the year"},
+  d:{zh:"一整年重要的蛋白質來源，也是「剛好就好」的保存智慧：存太少會挨餓，存太多則浪費。", en:"A key year-round protein, and a lesson in storing just enough."},
+  taboo:{zh:"終食時間點與剩餘飛魚乾的處理方式待確認。", en:"The cut-off date and what happens to leftovers need verification."},
+  src:["lit","int"], verify:true, game:true},
+ {id:"dorado", tao:PENDING_TAO, zh:"鬼頭刀", en:"Mahi-mahi (dorado)", cat:"sea", seasons:["rayon"], role:"m",
+  get:{zh:"男性於飛魚季捕撈，鬼頭刀會追捕飛魚。", en:"Caught by men during the flying fish season; it hunts flying fish."},
+  eat:{zh:"待確認", en:"To be verified"},
+  d:{zh:"與飛魚一起出現的大型魚，是飛魚季的重要漁獲。", en:"A large fish that follows the flying fish; an important catch of the season."},
+  taboo:{zh:"待確認", en:"To be verified"}, src:["lit"], verify:true, game:true},
+ {id:"oyod", tao:"oyod", zh:"女人魚（好魚）", en:"Women's fish (oyod)", cat:"sea", seasons:["teyteyka","amiyan"], role:"both",
+  get:{zh:"男性捕撈，女性處理與烹煮。", en:"Caught by men, prepared and cooked by women."},
+  eat:{zh:"女性、孩童、長者可食，男性也可食", en:"Women, children and elders may eat it; men may too"},
+  d:{zh:"達悟族依魚的特性分類，女人魚被視為好的魚，適合全家食用。辨認魚類的知識本身就是食物主權。", en:"Fish are classified by their qualities. Oyod are considered good fish for everyone. Knowing how to classify fish is itself food sovereignty."},
+  taboo:{zh:"不同類別的魚是否分開鍋具、餐具處理，待確認。", en:"Whether different fish classes need separate pots and dishes is to be verified."},
+  src:["lit","int"], verify:true, game:true},
+ {id:"rahet", tao:"rahet", zh:"男人魚（壞魚）", en:"Men's fish (rahet)", cat:"sea", seasons:["teyteyka","amiyan"], role:"m",
+  get:{zh:"男性捕撈。", en:"Caught by men."},
+  eat:{zh:"僅男性食用", en:"Eaten by men only"},
+  d:{zh:"只有男性能吃的魚。分錯魚，家人就無法進食。", en:"Fish only men may eat. Misclassifying them means family members cannot eat."},
+  taboo:{zh:"具體魚種清單待確認。", en:"The species list is to be verified."}, src:["lit"], verify:true, game:true},
+ {id:"elderfish", tao:PENDING_TAO, zh:"老人魚", en:"Elders' fish", cat:"sea", seasons:["teyteyka","amiyan"], role:"m",
+  get:{zh:"待確認", en:"To be verified"}, eat:{zh:"長者食用", en:"Eaten by elders"},
+  d:{zh:"專屬長者的魚類，具體魚種與規範待確認。", en:"Fish reserved for elders; species and rules to be verified."},
+  taboo:{zh:"待確認", en:"To be verified"}, src:["lit"], verify:true, game:true},
+ {id:"taro", tao:PENDING_TAO, zh:"水芋", en:"Wetland taro", cat:"land", seasons:["rayon","teyteyka","amiyan"], role:"both",
+  get:{zh:"男性開墾、整地與引水；女性種植、除草、照顧與採收。", en:"Men clear land and build irrigated fields; women plant, weed, tend and harvest."},
+  eat:{zh:"全家主食", en:"Staple for everyone"},
+  d:{zh:"達悟族主食，也是新船、新屋落成等場合的重要禮儀食物。芋頭也連結了整個太平洋的南島民族。", en:"The Tao staple, and a key ceremonial food when new boats or houses are completed. Taro links Austronesian peoples across the Pacific."},
+  taboo:{zh:"水芋田的照顧規矩待補充。", en:"Field-care rules to be added."}, src:["lit","int"], verify:true, game:true},
+ {id:"sweetpotato", tao:PENDING_TAO, zh:"地瓜", en:"Sweet potato", cat:"land", seasons:["rayon","teyteyka","amiyan"], role:"f",
+  get:{zh:"待確認", en:"To be verified"}, eat:{zh:"全家主食", en:"Staple for everyone"},
+  d:{zh:"重要主食之一。", en:"One of the main staples."}, taboo:{zh:"待確認", en:"To be verified"}, src:["lit"], verify:true},
+ {id:"millet", tao:PENDING_TAO, zh:"小米", en:"Foxtail millet", cat:"land", seasons:[], role:"both",
+  get:{zh:"待確認", en:"To be verified"}, eat:{zh:"待確認", en:"To be verified"},
+  d:{zh:"與歲時活動相關的穀物，相關活動與分工待確認。", en:"A grain linked to seasonal activities; details to be verified."},
+  taboo:{zh:"待確認", en:"To be verified"}, src:["lit"], verify:true},
+ {id:"yam", tao:"ovi（待確認）", zh:"山藥", en:"Yam", cat:"land", seasons:[], role:"both",
+  get:{zh:"待確認", en:"To be verified"}, eat:{zh:"待確認", en:"To be verified"},
+  d:{zh:"根莖類食物，名稱可與其他南島語言比較。", en:"A root crop whose name can be compared with other Austronesian languages."},
+  taboo:{zh:"待確認", en:"To be verified"}, src:["lit"], verify:true},
+ {id:"landcrab", tao:PENDING_TAO, zh:"陸蟹", en:"Land crab", cat:"land", seasons:["teyteyka"], role:"f",
+  get:{zh:"女性於夜間捕捉。", en:"Caught by women at night."}, eat:{zh:"待確認", en:"To be verified"},
+  d:{zh:"夏季夜晚的食物。今日面臨道路路殺的威脅。", en:"A summer night food, now threatened by road traffic."},
+  taboo:{zh:"避開抱卵母蟹，讓族群延續。", en:"Leave egg-carrying females so the population continues."}, src:["int"], verify:true, game:true},
+ {id:"shellfish", tao:PENDING_TAO, zh:"潮間帶貝類與螺類", en:"Intertidal shellfish", cat:"tide", seasons:["rayon","teyteyka","amiyan"], role:"f",
+  get:{zh:"女性於退潮時採集。", en:"Gathered by women at low tide."}, eat:{zh:"待確認", en:"To be verified"},
+  d:{zh:"潮間帶是女性重要的食物來源，物種名稱待族人補充。", en:"The intertidal zone is an important food source for women; species to be added."},
+  taboo:{zh:"只取需要的量，太小的不採（待確認）。", en:"Take only what is needed; leave small ones (to be verified)."}, src:["int"], verify:true, game:true},
+ {id:"seaweed", tao:PENDING_TAO, zh:"海藻", en:"Seaweed", cat:"tide", seasons:[], role:"f",
+  get:{zh:"女性採集。", en:"Gathered by women."}, eat:{zh:"待確認", en:"To be verified"},
+  d:{zh:"種類與採集季節待補充。", en:"Species and season to be added."}, taboo:{zh:"待確認", en:"To be verified"}, src:["int"], verify:true},
+ {id:"livestock", tao:PENDING_TAO, zh:"豬與羊", en:"Pigs and goats", cat:"land", seasons:[], role:"m",
+  get:{zh:"男性飼養與宰殺。", en:"Raised and slaughtered by men."}, eat:{zh:"慶典時分享", en:"Shared at celebrations"},
+  d:{zh:"在新船、新屋落成等場合分享的肉類。", en:"Meat shared when new boats or houses are completed."},
+  taboo:{zh:"分享方式待確認。", en:"Sharing customs to be verified."}, src:["lit"], verify:true},
+ {id:"coconutcrab", tao:PENDING_TAO, zh:"椰子蟹（保育類）", en:"Coconut crab (protected)", cat:"land", seasons:[], role:"both",
+  get:{zh:"現為保育類，不可捕捉。", en:"Now protected; not to be caught."}, eat:{zh:"現今不可食用", en:"Not to be eaten today"},
+  d:{zh:"「現在不能吃的食物」：說明生態保育如何改變飲食。", en:"A food no longer eaten, showing how conservation reshapes diets."},
+  taboo:{zh:"依法保育。", en:"Protected by law."}, src:["lit"], verify:false}
+];
+
+const RECIPES = [
+ {id:"r1", zh:"水煮飛魚", en:"Boiled flying fish", tao:PENDING_TAO, season:"rayon", who:{zh:"女性烹煮",en:"Cooked by women"},
+  ing:{zh:["新鮮飛魚","水（是否使用海水待確認）"], en:["Fresh flying fish","Water (whether seawater is used: to be verified)"]},
+  steps:{zh:["飛魚依規矩處理與切割（方式待族人示範）","放入鍋中以水煮熟","與芋頭一同食用"], en:["Prepare and cut the fish the customary way (to be demonstrated)","Boil until cooked","Eat with taro"]},
+  note:{zh:"飛魚季期間的鍋具、烹煮方式可能有專門規矩，請以族人說明為準。", en:"Pots and cooking methods may follow special rules in the season; follow community guidance."}},
+ {id:"r2", zh:"曬飛魚乾", en:"Drying flying fish", tao:PENDING_TAO, season:"rayon", who:{zh:"女性負責",en:"Women's work"},
+  ing:{zh:["處理好的飛魚","鹽（用量待確認）"], en:["Prepared flying fish","Salt (amount to be verified)"]},
+  steps:{zh:["剖開飛魚（切法待族人示範）","抹鹽（待確認）","掛在曬魚架上日曬","曬乾後收藏，作為非飛魚季的存糧"], en:["Open the fish (method to be shown)","Salt (to be verified)","Hang on drying racks in the sun","Store as food for the off-season"]},
+  note:{zh:"旅人請勿觸碰曬魚架上的魚，那是家庭一整年的糧食。", en:"Visitors: please don't touch fish on the racks; it is a family's food for the year."}},
+ {id:"r3", zh:"水煮芋頭", en:"Boiled taro", tao:PENDING_TAO, season:"all", who:{zh:"女性烹煮",en:"Cooked by women"},
+  ing:{zh:["水芋","水"], en:["Wetland taro","Water"]},
+  steps:{zh:["採收後清洗","整顆或切塊放入鍋中","水煮至熟透","搭配魚類食用"], en:["Wash after harvest","Put in the pot whole or in pieces","Boil until soft","Serve with fish"]},
+  note:{zh:"可與夏威夷的 poi（芋泥）比較，看同一種作物在太平洋的不同吃法。", en:"Compare with Hawaiian poi to see one crop eaten differently across the Pacific."}},
+ {id:"r4", zh:"水煮陸蟹", en:"Boiled land crab", tao:PENDING_TAO, season:"teyteyka", who:{zh:"女性捕捉與烹煮",en:"Caught and cooked by women"},
+  ing:{zh:["陸蟹（不取抱卵母蟹）","水"], en:["Land crab (no egg-carrying females)","Water"]},
+  steps:{zh:["夜間捕捉後清洗","水煮至變色熟透"], en:["Clean after night catch","Boil until cooked through"]},
+  note:{zh:"捕捉季節與數量規範待確認。", en:"Season and quantity rules to be verified."}},
+ {id:"r5", zh:"達悟餐桌：魚與芋頭", en:"A Tao meal: fish and taro", tao:PENDING_TAO, season:"all", who:{zh:"全家共食，依魚類分配",en:"Shared, served by fish class"},
+  ing:{zh:["芋頭或地瓜","當季魚類（依女人魚、男人魚分類）"], en:["Taro or sweet potato","Seasonal fish (sorted by class)"]},
+  steps:{zh:["主食與魚分別烹煮","依魚的類別分配給適合的家人","全家共食"], en:["Cook staples and fish separately","Serve each fish class to the right family members","Eat together"]},
+  note:{zh:"學生練習：比較你家的一餐和達悟餐桌，誰決定吃什麼？食材從哪裡來？", en:"Student task: compare your family meal with a Tao meal. Who decides what is eaten? Where does the food come from?"}}
+];
+
+const VILLAGES = [
+ {tao:"Imorod", zh:"紅頭", status:"rayon", zhn:"每年由紅頭率先舉行招魚祭，宣告飛魚季開始。", en:"Imorod holds the first ceremony each year to open the flying fish season."},
+ {tao:"Iratay", zh:"漁人", status:"rayon", zhn:"與紅頭相鄰。部落飲食特色待族人提供。", en:"Neighbors Imorod. Food traditions to be added by the community."},
+ {tao:"Yayo", zh:"椰油", status:"rayon", zhn:"旅人常見的入島接觸點。部落飲食特色待族人提供。", en:"A common first stop for visitors. Food traditions to be added."},
+ {tao:"Iraraley", zh:"朗島", status:"rayon", zhn:"島的北端。部落飲食特色待族人提供。", en:"On the north coast. Food traditions to be added."},
+ {tao:"Iranmeylek", zh:"東清", status:"rayon", zhn:"觀光活動較多。部落飲食特色待族人提供。", en:"Busy with tourism. Food traditions to be added."},
+ {tao:"Ivalino", zh:"野銀", status:"rayon", zhn:"傳統地下屋保存完整。部落飲食特色待族人提供。", en:"Known for well-kept traditional semi-underground houses. Food traditions to be added."}
+];
+
+const RULES = [
+ {no:true, zh:["飛魚季不進入灘頭","灘頭是拼板舟的地方。請確認當地部落是否已進入飛魚季。"], en:["Stay off boat beaches in the season","Beaches belong to the boats. Check whether this village's season has begun."]},
+ {no:true, zh:["飛魚季不觸碰拼板舟","包括倚靠、拍照時接觸。季節結束後，可在族人帶領下體驗。"], en:["Don't touch boats in the season","Not even to lean or pose. After the season, you can try one with a local guide."]},
+ {no:true, zh:["不接近祭典","請在遠處安靜離開，不拍攝。"], en:["Keep away from ceremonies","Leave quietly from a distance and don't film."]},
+ {no:true, zh:["不觸碰曬魚架上的魚","那是一個家庭一整年的糧食。"], en:["Don't touch drying fish","It is a family's food for the year."]},
+ {no:false, zh:["拍人、拍家屋前先詢問","對方同意後再拍。"], en:["Ask before photographing people or homes","Shoot only with permission."]},
+ {no:false, zh:["主動問能不能幫忙","族人會帶你參與適合的工作，例如潮間帶或水芋田。"], en:["Ask how you can help","Hosts may invite you to suitable work, like the shore or taro fields."]}
+];
+
+const GAME = "https://claude.ai/artifact/Hk3pXi1bKbNeKcVk3j9ach";
+const GAME_ROLE_IDS = ["tm","tw","vm","vw"];
+const GAME_ROLES = [
+ {zh:"族人男青年", en:"Tao young man", d:{zh:"拼板舟、飛魚、開墾", en:"Boats, flying fish, clearing land"}},
+ {zh:"族人女青年", en:"Tao young woman", d:{zh:"潮間帶、陸蟹、水芋田、曬魚", en:"Shore, land crabs, taro, drying fish"}},
+ {zh:"男旅人", en:"Male visitor", d:{zh:"學結網、看造船、學習尊重", en:"Net-making, boat-building, learning respect"}},
+ {zh:"女旅人", en:"Female visitor", d:{zh:"潮間帶、水芋田、學料理", en:"Shore, taro fields, cooking"}}
+];
+
+const WORDS = [
+ {lang:{zh:"達悟語（蘭嶼）",en:"Tao (Lanyu)"}, taro:"【待確認】", yam:"ovi【待確認】", ff:"alibangbang"},
+ {lang:{zh:"伊瓦坦語（菲律賓巴丹群島）",en:"Ivatan (Batanes, Philippines)"}, taro:"【待確認】", yam:"【待確認】", ff:"dibang【待確認】"},
+ {lang:{zh:"夏威夷語",en:"Hawaiian"}, taro:"kalo", yam:"uhi", ff:"mālolo"},
+ {lang:{zh:"薩摩亞語",en:"Samoan"}, taro:"talo", yam:"ufi", ff:"【待確認】"},
+ {lang:{zh:"東加語",en:"Tongan"}, taro:"talo", yam:"ʻufi", ff:"【待確認】"},
+ {lang:{zh:"斐濟語",en:"Fijian"}, taro:"dalo", yam:"uvi", ff:"【待確認】"},
+ {lang:{zh:"毛利語（奧特亞羅瓦）",en:"Māori (Aotearoa)"}, taro:"taro", yam:"uwhi", ff:"【待確認】"}
+];
+
+const PARTNERS = [
+ {zh:"巴丹群島（伊瓦坦族）", en:"Batanes (Ivatan)", d:{zh:"與達悟族語言最接近的鄰居，同樣有飛魚與海洋文化，可比較季節與分工。", en:"The Tao's closest linguistic relatives, also with flying fish and ocean traditions."}},
+ {zh:"夏威夷", en:"Hawaiʻi", d:{zh:"水芋田（loʻi kalo）復興運動，可對照蘭嶼水芋田的保存與傳承。", en:"The revival of loʻi kalo, wetland taro fields, parallels Lanyu's taro fields."}},
+ {zh:"奧特亞羅瓦（紐西蘭）", en:"Aotearoa", d:{zh:"毛利族的原住民資料主權與食物主權實踐，可作為資料治理參考。", en:"Māori work on Indigenous data and food sovereignty offers governance models."}},
+ {zh:"斐濟、薩摩亞、東加", en:"Fiji, Samoa, Tonga", d:{zh:"芋頭與海洋飲食在進口食物衝擊下的韌性經驗。", en:"Experiences of taro and ocean foodways under pressure from imported food."}}
+];
+
+const PEOPLES = [
+ ["阿美族","Amis"],["泰雅族","Atayal"],["排灣族","Paiwan"],["布農族","Bunun"],["卑南族","Puyuma"],
+ ["魯凱族","Rukai"],["鄒族","Tsou"],["賽夏族","Saisiyat"],["雅美族（達悟族）","Yami / Tao"],["邵族","Thao"],
+ ["噶瑪蘭族","Kavalan"],["太魯閣族","Truku"],["撒奇萊雅族","Sakizaya"],["賽德克族","Seediq"],
+ ["拉阿魯哇族","Hla'alua"],["卡那卡那富族","Kanakanavu"]
+];
+const AUSTRO = [["台灣","Taiwan"],["菲律賓","Philippines"],["印尼","Indonesia"],["馬來西亞","Malaysia"],["密克羅尼西亞","Micronesia"],["美拉尼西亞","Melanesia"],["玻里尼西亞","Polynesia"],["馬達加斯加","Madagascar"]];
+
+const ISLANDS = [
+ {id:"taiwan", lon:121.0, lat:23.7, zh:"台灣", en:"Taiwan", who:{zh:"台灣原住民族（政府認定 16 族）",en:"Indigenous peoples of Taiwan (16 recognized)"}, foods:{zh:["小米","芋頭","山藥","地瓜","各族內容建置中"],en:["Millet","Taro","Yam","Sweet potato","More as each people joins"]}, d:{zh:"多數語言學家認為台灣是南島語族向外擴散的起點，太平洋與印度洋的南島語言都與台灣有親屬關係。資料庫將從達悟族出發，逐步連結台灣 16 族。",en:"Most linguists see Taiwan as the starting point of the Austronesian expansion; Austronesian languages across the Pacific and Indian Oceans are related to Taiwan's. The database will grow from the Tao to all 16 peoples."}, inset:true},
+ {id:"lanyu", lon:121.55, lat:22.05, zh:"蘭嶼", en:"Lanyu (Pongso no Tao)", who:{zh:"達悟族（雅美族）",en:"Tao (Yami)"}, foods:{zh:["飛魚","水芋","山藥","陸蟹"],en:["Flying fish","Wetland taro","Yam","Land crab"]}, d:{zh:"本資料庫的起點，位於台灣東南方的黑潮上。三季曆依飛魚洄游安排一整年的工作與飲食。",en:"Where this database begins, in the Kuroshio southeast of Taiwan. The three-season calendar follows the flying fish."}, home:true, inset:true},
+ {id:"batanes", lon:121.97, lat:20.45, zh:"巴丹群島", en:"Batanes", who:{zh:"伊瓦坦族（菲律賓）",en:"Ivatan (Philippines)"}, foods:{zh:["飛魚","芋頭","山藥"],en:["Flying fish","Taro","Yam"]}, d:{zh:"與達悟語最接近的語言。同樣有飛魚文化，可比較季節、分工與保存方式。",en:"Closest linguistic kin of the Tao, also with flying fish traditions to compare."}, inset:true},
+ {id:"palau", lon:134.6, lat:7.5, zh:"帛琉", en:"Palau", who:{zh:"帛琉人",en:"Palauans"}, foods:{zh:["水芋田","海洋漁撈"],en:["Taro patches","Reef fishing"]}, d:{zh:"水芋田與性別分工的比較案例（待確認）。",en:"A comparison case for taro fields and gendered work (to be verified)."}},
+ {id:"guam", lon:144.8, lat:13.4, zh:"關島與馬里亞納", en:"Guåhan & Marianas", who:{zh:"查莫洛族",en:"CHamoru"}, foods:{zh:["【待補】"],en:["[to be added]"]}, d:{zh:"密克羅尼西亞的南島民族，食物內容待合作夥伴提供。",en:"Austronesian people of Micronesia; food content to come from partners."}},
+ {id:"fiji", lon:178, lat:-17.7, zh:"斐濟", en:"Fiji", who:{zh:"iTaukei 斐濟原住民",en:"iTaukei Fijians"}, foods:{zh:["dalo 芋頭","海洋漁撈"],en:["Dalo (taro)","Fishing"]}, d:{zh:"芋頭在進口食物衝擊下的韌性經驗。",en:"How taro holds up under pressure from imported food."}},
+ {id:"tonga", lon:184.8, lat:-21.2, zh:"東加", en:"Tonga", who:{zh:"東加人",en:"Tongans"}, foods:{zh:["talo 芋頭","ʻufi 山藥"],en:["Talo (taro)","ʻUfi (yam)"]}, d:{zh:"山藥在東加飲食與禮儀中的地位，可與蘭嶼對照。",en:"The place of yam in Tongan food and ceremony, compared with Lanyu."}},
+ {id:"samoa", lon:188, lat:-13.8, zh:"薩摩亞", en:"Samoa", who:{zh:"薩摩亞人",en:"Samoans"}, foods:{zh:["talo 芋頭","palusami 芋葉椰奶"],en:["Talo (taro)","Palusami"]}, d:{zh:"芋頭與芋葉的多種吃法，適合做學生食譜比較。",en:"Many ways of eating taro and its leaves; good for student recipe comparisons."}},
+ {id:"aotearoa", lon:174, lat:-41, zh:"奧特亞羅瓦", en:"Aotearoa", who:{zh:"毛利族",en:"Māori"}, foods:{zh:["kūmara 地瓜","māra kai 食物園"],en:["Kūmara","Māra kai gardens"]}, d:{zh:"原住民資料主權與食物園復興的經驗，可作為本計畫資料治理的參考。",en:"Indigenous data sovereignty and food garden revival as governance models."}},
+ {id:"hawaii", lon:204.4, lat:19.9, zh:"夏威夷", en:"Hawaiʻi", who:{zh:"夏威夷原住民（Kanaka Maoli）",en:"Kanaka Maoli"}, foods:{zh:["kalo 芋頭","poi 芋泥","loʻi 水芋田"],en:["Kalo","Poi","Loʻi"]}, d:{zh:"水芋田復興運動，可對照蘭嶼水芋田的保存與傳承。",en:"The loʻi kalo revival parallels Lanyu's wetland taro fields."}},
+ {id:"tahiti", lon:210.6, lat:-17.7, zh:"大溪地", en:"Tahiti", who:{zh:"毛希人（Māʻohi）",en:"Māʻohi"}, foods:{zh:["taro 芋頭","ʻuru 麵包樹"],en:["Taro","ʻUru (breadfruit)"]}, d:{zh:"芋頭與麵包樹構成的島嶼主食體系。",en:"An island staple system of taro and breadfruit."}},
+ {id:"rapanui", lon:250.6, lat:-27.1, zh:"拉帕努伊", en:"Rapa Nui", who:{zh:"拉帕努伊人",en:"Rapa Nui people"}, foods:{zh:["【待補】"],en:["[to be added]"]}, d:{zh:"玻里尼西亞三角的東端，食物內容待合作夥伴提供。",en:"The eastern corner of the Polynesian Triangle; content to come from partners."}}
+];
+let curIsle="lanyu";
+const px=lon=>(lon-110)/150*1000, py=lat=>(32-lat)/76*540;
+function renderMap(){
+  const svg=document.getElementById("vmap"); if(!svg) return;
+  const by=id=>ISLANDS.find(i=>i.id===id);
+  const home=by("lanyu"), hx=px(home.lon), hy=py(home.lat);
+  const TW=[[121.5,25.3],[122.0,25.0],[121.85,24.5],[121.6,23.8],[121.4,23.1],[121.0,22.6],[120.85,21.9],[120.7,22.3],[120.3,22.6],[120.1,23.0],[120.15,23.6],[120.4,24.2],[120.7,24.6],[121.0,25.05]];
+  const label=i=>esc(lang==="en"?i.en:i.zh);
+  let h="";
+  for(let lat=30;lat>=-40;lat-=10){ const y=py(lat); h+=`<line x1="0" x2="1000" y1="${y}" y2="${y}" stroke="#8FE3DC" stroke-opacity="${lat===0?.35:.08}" ${lat===0?'stroke-dasharray="2 6"':''}/>`; }
+  for(let lon=120;lon<=250;lon+=20){ const x=px(lon); h+=`<line y1="0" y2="540" x1="${x}" x2="${x}" stroke="#8FE3DC" stroke-opacity=".06"/>`; }
+  h+=`<text x="990" y="${py(0)-6}" text-anchor="end" fill="#8FE3DC" fill-opacity=".6" font-size="13">${esc(t("equator"))}</text>`;
+  const tri=["hawaii","aotearoa","rapanui"].map(by).map(i=>`${px(i.lon)},${py(i.lat)}`).join(" ");
+  h+=`<polygon points="${tri}" fill="#8FE3DC" fill-opacity=".05" stroke="#8FE3DC" stroke-opacity=".35" stroke-dasharray="6 6"/>`;
+  h+=`<text x="${px(222)}" y="${py(-2)}" text-anchor="middle" fill="#8FE3DC" fill-opacity=".7" font-size="14" font-family="Noto Serif TC,serif">${esc(t("polyTri"))}</text>`;
+  [["Micronesia","密克羅尼西亞",150,18],["Melanesia","美拉尼西亞",160,-8]].forEach(([e,z,lo,la])=>h+=`<text x="${px(lo)}" y="${py(la)}" fill="#8FE3DC" fill-opacity=".55" font-size="14" font-family="Noto Serif TC,serif">${esc(lang==="en"?e:z)}</text>`);
+  h+=`<text x="10" y="${py(10)}" fill="#8FE3DC" fill-opacity=".55" font-size="13">${esc(t("toMadagascar"))}</text>`;
+  /* routes from Lanyu */
+  ISLANDS.filter(i=>!i.inset).forEach(i=>{ const x=px(i.lon), y=py(i.lat), mx=(hx+x)/2, my=Math.min(hy,y)-60-Math.abs(x-hx)*.12;
+    h+=`<path d="M${hx},${hy} Q${mx},${my} ${x},${y}" fill="none" stroke="${i.id===curIsle?"#F4B860":"#8FE3DC"}" stroke-opacity="${i.id===curIsle?.9:.28}" stroke-width="${i.id===curIsle?2:1.2}" stroke-dasharray="3 6"/>`; });
+  /* Taiwan on main map (small) */
+  h+=`<polygon points="${TW.map(([lo,la])=>`${px(lo)},${py(la)}`).join(" ")}" fill="#F2F7F6" fill-opacity=".9"/>`;
+  h+=`<circle cx="${hx}" cy="${hy}" r="3" fill="#F4B860"/><circle cx="${px(121.97)}" cy="${py(20.45)}" r="2.5" fill="#F2F7F6"/>`;
+  h+=`<text x="${px(118.6)}" y="${py(26.4)}" fill="#F2F7F6" font-size="15" font-weight="700" font-family="Noto Serif TC,serif">${esc(lang==="en"?"Taiwan":"台灣")}</text>`;
+  /* inset */
+  const IX=24, IY=286, IW=210, IH=246, k=40, L0=119.3, LA0=26.35;
+  const ix=lon=>IX+(lon-L0)*k, iy=lat=>IY+(LA0-lat)*k;
+  h+=`<path d="M${px(121)},${py(21.5)} L${IX+IW/2},${IY}" stroke="#8FE3DC" stroke-opacity=".45" stroke-dasharray="2 4"/>`;
+  h+=`<rect x="${IX}" y="${IY}" width="${IW}" height="${IH}" fill="#0E4554" stroke="#8FE3DC" stroke-opacity=".5" rx="2"/>`;
+  h+=`<text x="${IX+10}" y="${IY+22}" fill="#F4B860" font-size="14" font-weight="700" font-family="Noto Serif TC,serif">${esc(t("insetTitle"))}</text>`;
+  h+=`<path d="M${ix(122.4)},${iy(20.1)} C${ix(122.9)},${iy(22)} ${ix(122.3)},${iy(23.6)} ${ix(122.9)},${iy(25.4)}" fill="none" stroke="#5CC6C0" stroke-width="7" stroke-opacity=".35" stroke-linecap="round"/>`;
+  h+=`<path d="M${ix(122.75)},${iy(25.2)} l-4,10 l9,-3z" fill="#5CC6C0" fill-opacity=".7"/>`;
+  h+=`<text x="${ix(123.05)}" y="${iy(23.0)}" fill="#8FE3DC" font-size="12" writing-mode="${lang==="en"?"horizontal-tb":"vertical-rl"}" ${lang==="en"?`transform="rotate(-80 ${ix(123.05)} ${iy(23.0)})"`:""}>${esc(t("kuroshio"))}</text>`;
+  const tw=by("taiwan");
+  h+=`<g class="isle ${curIsle==="taiwan"?"on":""}" data-id="taiwan" tabindex="0" role="button" aria-label="${label(tw)}">
+      <polygon points="${TW.map(([lo,la])=>`${ix(lo)},${iy(la)}`).join(" ")}" fill="${curIsle==="taiwan"?"#F4B860":"#F2F7F6"}" stroke="#0A2E3D" stroke-width="1.5"/>
+      <text x="${ix(119.45)}" y="${iy(23.4)}" font-size="15">${label(tw)}</text></g>`;
+  [["lanyu",122.0,22.05,"start"],["batanes",121.55,20.45,"end"]].forEach(([id,tx,ty,anc])=>{ const i=by(id), x=ix(i.lon), y=iy(i.lat);
+    h+=`<g class="isle ${i.id===curIsle?"on":""}" data-id="${i.id}" tabindex="0" role="button" aria-label="${label(i)}">
+      <circle class="halo" cx="${x}" cy="${y}" r="12"/><circle class="dot" cx="${x}" cy="${y}" r="${i.home?7:5}"/>
+      <text x="${anc==="start"?x+12:x-12}" y="${y+5}" text-anchor="${anc}" font-size="14">${label(i)}</text></g>`; });
+  /* other islands */
+  ISLANDS.filter(i=>!i.inset).forEach(i=>{ const x=px(i.lon), y=py(i.lat); const left=i.id==="rapanui";
+    h+=`<g class="isle ${i.id===curIsle?"on":""}" data-id="${i.id}" tabindex="0" role="button" aria-label="${label(i)}">
+      <circle class="halo" cx="${x}" cy="${y}" r="14"/><circle class="dot" cx="${x}" cy="${y}" r="6"/>
+      <text x="${left?x-14:x+14}" y="${y+5}" text-anchor="${left?"end":"start"}">${label(i)}</text></g>`; });
+  svg.innerHTML=h;
+  svg.querySelectorAll(".isle").forEach(g=>{ const go=()=>{curIsle=g.dataset.id;renderMap();};
+    g.addEventListener("click",go); g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}}); });
+  const i=by(curIsle);
+  document.getElementById("vpanel").innerHTML=`<h3>${label(i)}</h3><div class="who">${esc(pick(i.who))}</div>
+    <div class="foods">${pick(i.foods).map(f=>`<span>${esc(f)}</span>`).join("")}</div><p>${esc(pick(i.d))}</p>
+    <small>${esc(i.home?t("startHere"):(i.id==="taiwan"?t("homeland"):t("partnerNote")))}</small>`;
+}
+function renderStars(){
+  const svg=document.getElementById("stars"); let h=""; let seed=7;
+  const r=()=>{seed=(seed*9301+49297)%233280;return seed/233280;};
+  for(let k=0;k<70;k++){ h+=`<circle cx="${r()*1000}" cy="${r()*420}" r="${r()*1.4+.4}" fill="#fff" opacity="${r()*.6+.2}"/>`; }
+  svg.innerHTML=h;
+}
+
+/* ============ 介面文字 ============ */
+const T = {
+ zh:{
+  navTaros:"TAROS 架構", navDb:"食材資料庫", navRecipes:"食譜", navVillages:"六部落", navVisit:"旅人須知", navPacific:"太平洋連結", navResearch:"研究方法",
+  heroTitle:"從蘭嶼出發，航向島嶼之海", heroLede:"以達悟族為起點的食物主權知識庫。我們結合文獻與族人訪談，記錄食物怎麼取得、誰來處理、怎麼分享，再順著黑潮與南島航路，和太平洋的島嶼民族交換彼此的海洋飲食知識。",
+  heroBtn1:"查食材", heroBtn2:"看食譜", wheelCap:"達悟三季曆：點選季節，查看當季食材",
+  nowTitle:"現在是 {s}", nowSub:"{d}",
+  tarosTitle:"TAROS 架構", tarosLede:"五個面向組成這個資料庫的思考方式，也是我們連結太平洋各地的共同語言。",
+  dbTitle:"食材資料庫", dbLede:"每一筆資料都標示來源：文獻、訪談，或尚待族人確認。內容以族人審定版本為準。",
+  search:"搜尋食材，例如：飛魚、taro、oyod",
+  fCat:"類別", fSeason:"季節", fRole:"取得者", fSrc:"來源", all:"全部",
+  lit:"文獻", int:"訪談", inGame:"遊戲中出現",
+  count:"共 {n} 筆", empty:"沒有符合的食材。試試清除篩選條件，或換個關鍵字。",
+  dGet:"取得與分工", dEat:"誰可以吃", dSeason:"季節", dTaboo:"規矩與禁忌", dSrc:"資料來源", close:"關閉",
+  litRef:"文獻：【待補引用】", intRef:"訪談：【待補受訪者代碼與部落，例如 I-01】",
+  recTitle:"食譜", recLede:"給學生的料理學習卡。做法以族人示範為準，標示待確認的步驟請勿自行推測。",
+  ing:"食材", steps:"步驟", allYear:"全年",
+  vilTitle:"六大部落", vilLede:"每年由紅頭部落率先開始飛魚季，其他部落各自決定時間。進入部落前，請先確認當地的季節狀態。",
+  vilStatusNote:"狀態為示意，正式上線後由各部落更新",
+  visitTitle:"旅人須知", visitLede:"尊重換來的是關係。遵守這些規矩，族人才可能邀請你走進他們的生活。",
+  gameTitle:"蘭嶼食物主權遊戲", gameLede:"以四個角色體驗三季曆、男女分工與旅人規矩。資料庫中標示「遊戲中出現」的食材，都會成為遊戲圖鑑；遊戲裡收集到的食物，也能連回這裡查資料。點選角色直接開始。", gameBtn:"開始玩（雛形）", playAs:"以這個角色開始", meetInGame:"在遊戲中遇見這個食物",
+  pacTitle:"島嶼之海", pacLede:"芋頭、山藥、飛魚與拼板舟，串起從台灣出發的南島語族。點選地圖上的島嶼，看看那裡的食物和蘭嶼有什麼連結。",
+  hauofa:"海洋不是把島嶼隔開的距離，而是把島嶼連在一起的道路。", hauofaSrc:"概念出自東加／斐濟學者 Epeli Hauʻofa〈Our Sea of Islands〉（1993），此為意譯", vHint:"地圖為示意，島嶼位置依經緯度概略標示；各地合作夥伴與內容待建立。", wordsTitle:"同源的食物詞彙", partnerNote:"合作待建立，內容須由當地社群確認", startHere:"從這裡出發", insetTitle:"台灣：南島語族的原鄉", kuroshio:"黑潮", toMadagascar:"← 往馬達加斯加", homeland:"南島語族的原鄉", polyTri:"玻里尼西亞三角", equator:"赤道",
+  thLang:"語言", thTaro:"芋頭", thYam:"山藥", thFf:"飛魚",
+  pplTitle:"台灣原住民族與南島世界", pplLede:"台灣政府認定 16 個原住民族。資料庫先從雅美族（達悟族）建置，再逐步與各族及整個南島民族連結。",
+  live:"建置中", soon:"規劃中",
+  resTitle:"研究方法與資料主權", resLede:"資料庫遵循原住民資料主權的 CARE 原則：集體利益、掌控權、責任與倫理。",
+  footer:"TAROS 蘭嶼食物主權資料庫雛形。所有文化內容待達悟族人審定，族語內容待族語老師校對。",
+  taoBar:"族語版本建置中：食材名稱顯示族語，其餘介面暫以中文呈現，由族語老師協助完成。",
+  chatFab:"問食物助理", chatTitle:"食物助理", send:"送出", chatPh:"問問題，例如：飛魚季旅人要注意什麼？",
+  chatDisc:"AI 依資料庫回答，可能有誤。族人說法優先，標示待確認的內容請勿當作定論。",
+  chatHi:"你好！我可以幫你查資料庫裡的食材、食譜和旅人須知。想知道什麼？",
+  sugs:["什麼是女人魚？","飛魚季旅人不能做什麼？","芋頭在太平洋各地叫什麼？"],
+  thinking:"思考中…", chatErr:{not_granted:"你沒有允許使用 Claude，助理暫時關閉。", rate_limited:"使用太頻繁，請稍後再試。", def:"助理暫時無法回答，請稍後再試。"}
+ },
+ en:{
+  navTaros:"TAROS", navDb:"Food database", navRecipes:"Recipes", navVillages:"Villages", navVisit:"Visitor guide", navPacific:"Pacific", navResearch:"Method",
+  heroTitle:"From Lanyu, out into our sea of islands", heroLede:"A food sovereignty knowledge base that begins with the Tao people of Pongso no Tao (Orchid Island). We combine research and community interviews on how food is gathered, prepared and shared, then follow the Kuroshio current and Austronesian voyaging routes to exchange ocean food knowledge with Pacific Island peoples.",
+  heroBtn1:"Search foods", heroBtn2:"Browse recipes", wheelCap:"The Tao three-season calendar: select a season to see its foods",
+  nowTitle:"It is now {s}", nowSub:"{d}",
+  tarosTitle:"The TAROS framework", tarosLede:"Five lenses shape this database and give us a shared language with other Pacific communities.",
+  dbTitle:"Food database", dbLede:"Every entry shows its source: literature, interviews, or pending community review. The community-reviewed version is authoritative.",
+  search:"Search foods, e.g. flying fish, taro, oyod",
+  fCat:"Type", fSeason:"Season", fRole:"Gathered by", fSrc:"Source", all:"All",
+  lit:"Literature", int:"Interview", inGame:"In the game",
+  count:"{n} entries", empty:"No foods match. Clear a filter or try another word.",
+  dGet:"Gathering and roles", dEat:"Who may eat it", dSeason:"Season", dTaboo:"Customs and taboos", dSrc:"Sources", close:"Close",
+  litRef:"Literature: [citation to be added]", intRef:"Interview: [interviewee code and village to be added, e.g. I-01]",
+  recTitle:"Recipes", recLede:"Cooking cards for students. Follow community demonstrations; don't guess steps marked for verification.",
+  ing:"Ingredients", steps:"Steps", allYear:"All year",
+  vilTitle:"Six villages", vilLede:"Imorod opens the flying fish season each year; every other village sets its own dates. Check a village's status before you visit.",
+  vilStatusNote:"Statuses are illustrative; villages will update them at launch",
+  visitTitle:"Visitor guide", visitLede:"Respect builds relationships. Follow these customs and hosts may invite you into daily life.",
+  gameTitle:"Lanyu food sovereignty game", gameLede:"Play four characters through the three seasons, the division of labor and visitor customs. Foods marked “In the game” become game collection entries, and foods you collect in the game link back here. Select a character to start.", gameBtn:"Play the prototype", playAs:"Start as this character", meetInGame:"Meet this food in the game",
+  pacTitle:"Our sea of islands", pacLede:"Taro, yam, flying fish and plank boats connect Austronesian peoples who set out from Taiwan. Select an island on the map to see how its foods connect with Lanyu.",
+  hauofa:"The ocean is not the distance that separates islands but the road that connects them.", hauofaSrc:"After Tongan-Fijian scholar Epeli Hauʻofa, “Our Sea of Islands” (1993); paraphrased", vHint:"The map is schematic; island positions are approximate. Partnerships and content are still to be built.", wordsTitle:"Related food words", partnerNote:"Partnership to be built; content to be confirmed by local communities", startHere:"Start here", insetTitle:"Taiwan: Austronesian homeland", kuroshio:"Kuroshio", toMadagascar:"← to Madagascar", homeland:"Austronesian homeland", polyTri:"Polynesian Triangle", equator:"Equator",
+  thLang:"Language", thTaro:"Taro", thYam:"Yam", thFf:"Flying fish",
+  pplTitle:"Taiwan's Indigenous peoples and the Austronesian world", pplLede:"Taiwan recognizes 16 Indigenous peoples. We start with the Yami (Tao) and will connect each people and the wider Austronesian world.",
+  live:"Building now", soon:"Planned",
+  resTitle:"Method and data sovereignty", resLede:"We follow the CARE principles for Indigenous data governance: Collective benefit, Authority to control, Responsibility and Ethics.",
+  footer:"TAROS Lanyu food sovereignty database prototype. All cultural content awaits review by Tao community members; Tao language content awaits review by language teachers.",
+  taoBar:"",
+  chatFab:"Ask the food assistant", chatTitle:"Food assistant", send:"Send", chatPh:"Ask, e.g. What should visitors avoid in flying fish season?",
+  chatDisc:"AI answers from the database and can be wrong. Community knowledge comes first; items marked for verification are not settled.",
+  chatHi:"Hi! I can help you look up foods, recipes and visitor customs in the database. What would you like to know?",
+  sugs:["What is oyod?","What can't visitors do in flying fish season?","What is taro called across the Pacific?"],
+  thinking:"Thinking…", chatErr:{not_granted:"Claude access wasn't allowed, so the assistant is off.", rate_limited:"Too many questions at once. Try again shortly.", def:"The assistant can't answer right now. Try again shortly."}
+ }
+};
+
+const TAROS = [
+ {L:"T", zh:"傳統生態知識", en:"Traditional Ecological Knowledge", d:{zh:"三季曆、魚類分類、採集規矩：禁忌本身就是資源管理。", en:"Seasons, fish classes and harvest rules: taboos as resource management."}},
+ {L:"A", zh:"人工智慧", en:"AI", d:{zh:"AI 助理只依族人審定的資料回答，標示來源，族人可撤回資料。AI 不取代族人知識。", en:"The assistant answers only from reviewed data, cites sources, and communities can withdraw data. AI never replaces community knowledge."}},
+ {L:"R", zh:"韌性", en:"Resilience", d:{zh:"存糧、分享網絡、生態休養，面對氣候變遷、海洋變化與進口食物。", en:"Food stores, sharing networks and resting ecosystems in the face of climate, ocean change and imported food."}},
+ {L:"O", zh:"大洋洲食物之路", en:"Oceanic Foodways", d:{zh:"芋頭、飛魚與拼板舟，連結蘭嶼與太平洋的南島民族。", en:"Taro, flying fish and plank boats link Lanyu with Austronesian peoples."}},
+ {L:"S", zh:"主權", en:"Sovereignty", d:{zh:"誰決定吃什麼、誰擁有知識、誰從資料中受益。", en:"Who decides what is eaten, who holds knowledge, who benefits from data."}}
+];
+
+const METHOD = [
+ {h:{zh:"文獻回顧",en:"Literature review"}, d:{zh:"整理民族誌、學位論文、政府報告與族人著作。每筆資料標註出處，待補引用處以【待補】標示。",en:"Ethnographies, theses, government reports and works by Tao authors. Every entry is cited; gaps are marked."}},
+ {h:{zh:"族人訪談",en:"Community interviews"}, d:{zh:"以知情同意進行訪談，受訪者以代碼呈現。受訪者可決定哪些內容公開、哪些只供研究使用。",en:"Interviews with informed consent, identified by code. Interviewees decide what is public and what stays in research only."}},
+ {h:{zh:"族人審定",en:"Community review"}, list:{zh:["研究團隊整理資料","各部落族人審閱","族語老師校對族語","審定後公開上線","族人可隨時要求修正或撤回"],en:["Research team compiles data","Village members review","Language teachers check Tao terms","Published after approval","Communities may correct or withdraw at any time"]}}
+];
+
+/* ============ 狀態與工具 ============ */
+let lang = "zh";
+const F = {q:"", cat:"all", season:"all", role:"all", src:"all"};
+let curRecipe = "r1";
+const L = () => lang === "en" ? "en" : "zh";
+const t = k => (T[L()][k] ?? T.zh[k]);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pick = o => o ? (o[L()] ?? o.zh) : "";
+const curSeason = () => { const m = new Date().getMonth()+1; return Object.keys(SEASONS).find(k => SEASONS[k].months.includes(m)); };
+const seasonLabel = k => lang === "tao" ? SEASONS[k].tao : (lang==="en" ? `${SEASONS[k].en} (${SEASONS[k].tao})` : `${SEASONS[k].zh}（${SEASONS[k].tao}）`);
+const foodTitle = f => {
+  if (lang === "tao") return {main: f.tao, sub: `${f.zh} · ${f.en}`};
+  if (lang === "en") return {main: f.en, sub: f.tao !== PENDING_TAO ? f.tao : "Tao name pending"};
+  return {main: f.zh, sub: f.tao !== PENDING_TAO ? f.tao : PENDING_TAO};
+};
+
+/* ============ 季節輪 ============ */
+function arc(cx,cy,r1,r2,a0,a1){
+  const p=(r,a)=>[cx+r*Math.cos(a*Math.PI/180), cy+r*Math.sin(a*Math.PI/180)];
+  const large = (a1-a0)>180?1:0;
+  const [x0,y0]=p(r2,a0),[x1,y1]=p(r2,a1),[x2,y2]=p(r1,a1),[x3,y3]=p(r1,a0);
+  return `M${x0},${y0} A${r2},${r2} 0 ${large} 1 ${x1},${y1} L${x2},${y2} A${r1},${r1} 0 ${large} 0 ${x3},${y3}Z`;
+}
+function drawWheel(){
+  const svg = document.getElementById("wheel");
+  const cs = curSeason(), m = new Date().getMonth()+1;
+  const spans = {rayon:[-60,90], teyteyka:[90,210], amiyan:[210,300]};
+  let h = "";
+  for (const k of Object.keys(spans)){
+    const [a0,a1]=spans[k], mid=(a0+a1)/2, r=150;
+    const lx=200+r*Math.cos(mid*Math.PI/180), ly=200+r*Math.sin(mid*Math.PI/180);
+    h += `<g class="wheel-seg" tabindex="0" role="button" data-season="${k}" aria-label="${esc(seasonLabel(k))}">
+      <path d="${arc(200,200,108,192,a0+0.8,a1-0.8)}" fill="${SEASONS[k].color}" opacity="${k===cs?1:.78}"/>
+      <text x="${lx}" y="${ly-4}" text-anchor="middle" fill="#fff" font-family="Noto Serif TC,serif" font-weight="900" font-size="22">${SEASONS[k].tao}</text>
+      <text x="${lx}" y="${ly+18}" text-anchor="middle" fill="#fff" font-size="13">${esc(lang==="en"?SEASONS[k].en:SEASONS[k].zh)}</text>
+    </g>`;
+  }
+  for (let i=1;i<=12;i++){
+    const a=(i-1)*30-90+15, r=82;
+    const x=200+r*Math.cos(a*Math.PI/180), y=200+r*Math.sin(a*Math.PI/180);
+    h += `<text x="${x}" y="${y+5}" text-anchor="middle" font-size="${i===m?16:13}" font-weight="${i===m?700:400}" fill="${i===m?"var(--red)":"var(--ink-soft)"}">${i}</text>`;
+  }
+  const am=(m-1)*30-90+15;
+  h += `<line x1="200" y1="200" x2="${200+60*Math.cos(am*Math.PI/180)}" y2="${200+60*Math.sin(am*Math.PI/180)}" stroke="var(--soot)" stroke-width="3" stroke-linecap="round"/><circle cx="200" cy="200" r="6" fill="var(--soot)"/>`;
+  svg.innerHTML = h;
+  svg.querySelectorAll(".wheel-seg").forEach(g=>{
+    const go=()=>{F.season=g.dataset.season;renderFilters();renderGrid();document.getElementById("database").scrollIntoView();};
+    g.addEventListener("click",go);
+    g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}});
+  });
+  const s = SEASONS[cs];
+  document.getElementById("now").style.setProperty("--season", s.color);
+  document.getElementById("nowTitle").textContent = t("nowTitle").replace("{s}", seasonLabel(cs));
+  document.getElementById("nowSub").textContent = lang==="en"? s.end : s.zhd;
+}
+
+/* ============ 資料庫 ============ */
+function renderFilters(){
+  const groups = [
+    ["fCat","cat",[["all",t("all")],...Object.entries(CATS).map(([k,v])=>[k,pick(v)])]],
+    ["fSeason","season",[["all",t("all")],...Object.keys(SEASONS).map(k=>[k,seasonLabel(k)])]],
+    ["fRole","role",[["all",t("all")],...Object.entries(ROLES).map(([k,v])=>[k,pick(v)])]],
+    ["fSrc","src",[["all",t("all")],["lit",t("lit")],["int",t("int")],["verify",pick(VERIFY)]]]
+  ];
+  document.getElementById("filters").innerHTML = groups.map(([lab,key,opts])=>
+    `<div class="frow"><span class="lab">${t(lab)}</span>${opts.map(([v,txt])=>`<button class="chip" data-k="${key}" data-v="${v}" aria-pressed="${F[key]===v}">${esc(txt)}</button>`).join("")}</div>`).join("");
+  document.querySelectorAll("#filters .chip").forEach(b=>b.onclick=()=>{F[b.dataset.k]=b.dataset.v;renderFilters();renderGrid();});
+}
+function matches(f){
+  const q=F.q.trim().toLowerCase();
+  if(q && ![f.zh,f.en,f.tao,f.d.zh,f.d.en].join(" ").toLowerCase().includes(q)) return false;
+  if(F.cat!=="all" && f.cat!==F.cat) return false;
+  if(F.season!=="all" && !f.seasons.includes(F.season)) return false;
+  if(F.role!=="all" && f.role!==F.role) return false;
+  if(F.src==="verify" && !f.verify) return false;
+  if((F.src==="lit"||F.src==="int") && !f.src.includes(F.src)) return false;
+  return true;
+}
+function tagsFor(f){
+  return f.src.map(s=>`<span class="tag ${s}">${t(s)}</span>`).join("") +
+    (f.verify?`<span class="tag verify">${esc(pick(VERIFY))}</span>`:"") +
+    (f.game?`<span class="tag">${t("inGame")}</span>`:"");
+}
+function renderGrid(){
+  const list = FOODS.filter(matches);
+  document.getElementById("count").textContent = t("count").replace("{n}", list.length);
+  const g = document.getElementById("grid");
+  if(!list.length){ g.innerHTML = `<div class="empty">${t("empty")}</div>`; return; }
+  g.innerHTML = list.map(f=>{ const ft=foodTitle(f); return `
+    <button class="food" data-id="${f.id}" style="--cat:${CATS[f.cat].color}">
+      <span class="tao">${esc(ft.main)}</span>
+      <span class="sub">${esc(ft.sub)} · ${esc(pick(CATS[f.cat]))}</span>
+      <p>${esc(pick(f.d))}</p>
+      <span class="tags">${tagsFor(f)}</span>
+    </button>`;}).join("");
+  g.querySelectorAll(".food").forEach(b=>b.onclick=()=>openFood(b.dataset.id));
+}
+function openFood(id){
+  const f = FOODS.find(x=>x.id===id), ft=foodTitle(f);
+  const seas = f.seasons.length? f.seasons.map(seasonLabel).join("、") : pick(VERIFY);
+  document.getElementById("dlgBody").innerHTML = `
+    <button class="close" id="dlgClose">${t("close")}</button>
+    <h3>${esc(ft.main)}</h3><div class="sub">${esc(ft.sub)}</div>
+    <div class="tags" style="padding-top:12px">${tagsFor(f)}</div>
+    <p>${esc(pick(f.d))}</p>
+    <dl>
+      <dt>${t("dGet")}</dt><dd>${esc(pick(f.get))}</dd>
+      <dt>${t("dEat")}</dt><dd>${esc(pick(f.eat))}</dd>
+      <dt>${t("dSeason")}</dt><dd>${esc(seas)}</dd>
+      <dt>${t("dTaboo")}</dt><dd>${esc(pick(f.taboo))}</dd>
+    </dl>
+    <div class="srcs"><b>${t("dSrc")}</b><ul>${f.src.map(s=>`<li>${esc(t(s==="lit"?"litRef":"intRef"))}</li>`).join("")}</ul>${f.game?`<a class="gamelink" href="${GAME}" target="_blank" rel="noopener">${esc(t("meetInGame"))}</a>`:""}</div>`;
+  const d=document.getElementById("dlg"); d.showModal();
+  document.getElementById("dlgClose").onclick=()=>d.close();
+}
+document.getElementById("dlg").addEventListener("click",e=>{if(e.target.id==="dlg")e.target.close();});
+
+/* ============ 食譜 ============ */
+function renderRecipes(){
+  document.getElementById("rlist").innerHTML = RECIPES.map(r=>`<button data-id="${r.id}" aria-current="${r.id===curRecipe}">${esc(lang==="en"?r.en:r.zh)}</button>`).join("");
+  document.querySelectorAll("#rlist button").forEach(b=>b.onclick=()=>{curRecipe=b.dataset.id;renderRecipes();});
+  const r = RECIPES.find(x=>x.id===curRecipe);
+  const s = r.season==="all"? t("allYear") : seasonLabel(r.season);
+  document.getElementById("rcard").innerHTML = `
+    <h3>${esc(lang==="en"?r.en:r.zh)}</h3>
+    <div class="meta">${esc(lang==="tao"?r.tao:(lang==="en"?"Tao name pending":r.tao))} · ${esc(s)} · ${esc(pick(r.who))}</div>
+    <span class="tag verify">${esc(pick(VERIFY))}</span>
+    <h4>${t("ing")}</h4><ul>${pick(r.ing).map(i=>`<li>${esc(i)}</li>`).join("")}</ul>
+    <h4>${t("steps")}</h4><ol>${pick(r.steps).map(i=>`<li>${esc(i)}</li>`).join("")}</ol>
+    <div class="note">${esc(pick(r.note))}</div>`;
+}
+
+/* ============ 其他區塊 ============ */
+function renderStatic(){
+  document.getElementById("tarosGrid").innerHTML = TAROS.map(p=>`
+    <div class="pillar"><div class="L">${p.L}</div><h3>${esc(lang==="en"?p.en:p.zh)}</h3><div class="en">${esc(lang==="en"?"":p.en)}</div><p>${esc(pick(p.d))}</p></div>`).join("");
+  document.getElementById("vilGrid").innerHTML = VILLAGES.map(v=>`
+    <div class="vil"><div class="tn">${v.tao}</div><div class="zn">${esc(lang==="en"?v.tao:v.zh)}</div>
+    <span class="st" style="--st:${SEASONS[curSeason()].color}" title="${esc(t("vilStatusNote"))}">${esc(seasonLabel(curSeason()))}</span>
+    <p>${esc(lang==="en"?v.en:v.zhn)}</p></div>`).join("");
+  document.getElementById("rules").innerHTML = RULES.map(r=>{const x=pick(r);return `<div class="rule ${r.no?"no":"yes"}"><b>${esc(x[0])}</b><p>${esc(x[1])}</p></div>`;}).join("");
+  document.getElementById("roles").innerHTML = GAME_ROLES.map((r,i)=>`<a class="role" href="${GAME}#play-${GAME_ROLE_IDS[i]}" target="_blank" rel="noopener"><b>${esc(lang==="en"?r.en:r.zh)}</b>${esc(pick(r.d))}<em>${esc(t("playAs"))}</em></a>`).join("");
+  document.getElementById("words").innerHTML = `<thead><tr><th>${t("thLang")}</th><th>${t("thTaro")}</th><th>${t("thYam")}</th><th>${t("thFf")}</th></tr></thead><tbody>${
+    WORDS.map(w=>`<tr><td>${esc(pick(w.lang))}</td><td class="w">${esc(w.taro)}</td><td class="w">${esc(w.yam)}</td><td class="w">${esc(w.ff)}</td></tr>`).join("")}</tbody>`;
+  if(document.getElementById("partners")) document.getElementById("partners").innerHTML = PARTNERS.map(p=>`<div class="partner"><h3>${esc(lang==="en"?p.en:p.zh)}</h3><p>${esc(pick(p.d))}</p></div>`).join("");
+  document.getElementById("pplGrid").innerHTML = PEOPLES.map(([z,e],i)=>{const on=i===8;return `<div class="ppl ${on?"on":""}"><b>${esc(lang==="en"?e:z)}</b><span>${esc(lang==="en"?z:e)}</span><em>${on?t("live"):t("soon")}</em></div>`;}).join("");
+  document.getElementById("austro").innerHTML = AUSTRO.map(([z,e])=>`<span class="tag">${esc(lang==="en"?e:z)}</span>`).join("");
+  document.getElementById("method").innerHTML = METHOD.map(m=>`<div><h3>${esc(pick(m.h))}</h3>${m.d?`<p>${esc(pick(m.d))}</p>`:`<ol class="steps">${pick(m.list).map(x=>`<li>${esc(x)}</li>`).join("")}</ol>`}</div>`).join("");
+}
+
+function applyLang(){
+  document.documentElement.lang = lang==="en"?"en":(lang==="tao"?"tao":"zh-Hant");
+  document.querySelectorAll("[data-i]").forEach(el=>{const v=t(el.dataset.i); if(typeof v==="string") el.textContent=v;});
+  document.getElementById("q").placeholder = t("search");
+  document.getElementById("chatIn").placeholder = t("chatPh");
+  document.getElementById("taobar").classList.toggle("show", lang==="tao");
+  document.querySelectorAll(".langs button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.lang===lang));
+  drawWheel(); renderMap(); renderFilters(); renderGrid(); renderRecipes(); renderStatic(); renderSugs();
+}
+document.querySelectorAll(".langs button").forEach(b=>b.onclick=()=>{lang=b.dataset.lang;applyLang();});
+document.getElementById("q").addEventListener("input",e=>{F.q=e.target.value;renderGrid();});
+
+/* ============ 聊天助理 ============ */
+let sample=null, busy=false, ctl=null;
+const history=[];
+const chat=document.getElementById("chat"), msgs=document.getElementById("msgs");
+function addMsg(role,text){const d=document.createElement("div");d.className="m "+(role==="user"?"u":"a");d.textContent=text;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
+function renderSugs(){
+  const box=document.getElementById("sugs");
+  box.innerHTML = history.length? "" : t("sugs").map(s=>`<button class="chip">${esc(s)}</button>`).join("");
+  box.querySelectorAll("button").forEach(b=>b.onclick=()=>ask(b.textContent));
+}
+function knowledge(){
+  return JSON.stringify({
+    note:"Prototype data. Items with verify:true or containing 待確認/待補 are NOT confirmed by the Tao community.",
+    seasons:SEASONS, foods:FOODS.map(f=>({zh:f.zh,en:f.en,tao:f.tao,category:CATS[f.cat].en,seasons:f.seasons,gatheredBy:ROLES[f.role].en,get:f.get,whoEats:f.eat,desc:f.d,customs:f.taboo,sources:f.src,needsVerification:f.verify})),
+    recipes:RECIPES, villages:VILLAGES, visitorRules:RULES, pacificWords:WORDS, taiwanPeoples:PEOPLES
+  });
+}
+function buildPrompt(){
+  const answerLang = lang==="en" ? "English" : "Traditional Chinese (Taiwan)";
+  const intro = `You are the food assistant for TAROS, a prototype database on Tao (Yami) food sovereignty in Lanyu (Orchid Island), Taiwan, connected to Pacific Austronesian foodways.
+Rules:
+- Answer ONLY from the DATABASE below. If it isn't there, say the database doesn't have it yet and suggest asking Tao community members.
+- When information is marked needsVerification, 待確認 or 待補, say clearly that it awaits community confirmation.
+- Never invent Tao language words, ceremony details or taboos. Community knowledge comes first.
+- Do not describe ceremonies in detail; encourage visitors to respect taboos.
+- Mention whether an answer comes from literature, interviews, or both when relevant.
+- Answer in ${answerLang}, in plain text without markdown, in 2 to 6 short sentences.
+DATABASE:
+${knowledge()}`;
+  const turns = history.slice(-10).map(h=>({role:h.role, content:h.content}));
+  turns[0] = {role:"user", content: intro + "\n\nQUESTION: " + turns[0].content};
+  if (turns[0].role!=="user") turns.shift();
+  return turns;
+}
+async function ask(q){
+  q=q.trim(); if(!q||busy||!sample) return;
+  busy=true; addMsg("user",q); history.push({role:"user",content:q}); renderSugs();
+  const out=addMsg("assistant",t("thinking"));
+  ctl=new AbortController();
+  try{
+    const {text}=await sample(buildPrompt(),{cache:false,signal:ctl.signal,onText:({text})=>{out.textContent=text;msgs.scrollTop=msgs.scrollHeight;}});
+    out.textContent=text; history.push({role:"assistant",content:text});
+  }catch(e){
+    if(e && e.text){ out.textContent=e.text; history.push({role:"assistant",content:e.text}); }
+    else { out.textContent = t("chatErr")[e?.code] || t("chatErr").def; history.pop(); }
+    if(e?.code==="not_granted"){ document.getElementById("chatFab").hidden=true; }
+  }finally{ busy=false; }
+}
+document.getElementById("chatForm").onsubmit=e=>{e.preventDefault();const i=document.getElementById("chatIn");ask(i.value);i.value="";};
+document.getElementById("chatFab").onclick=()=>{chat.classList.toggle("open"); if(chat.classList.contains("open")){ if(!msgs.children.length) addMsg("assistant",t("chatHi")); document.getElementById("chatIn").focus(); }};
+document.getElementById("chatClose").onclick=()=>chat.classList.remove("open");
+(async()=>{ try{ if(window.claude){ sample=await claude.use("sample"); if(sample) document.getElementById("chatFab").hidden=false; } }catch(e){} })();
+
+renderStars();
+applyLang();
+/* 從遊戲連回：#food-<id> 直接打開該食材 */
+function openFromHash(){ const m=location.hash.match(/^#food-([a-z]+)$/); if(m && FOODS.some(f=>f.id===m[1])){ document.getElementById("database").scrollIntoView(); openFood(m[1]); } }
+window.addEventListener("hashchange", openFromHash);
+openFromHash();
+</script>
+</body>
+</html>
