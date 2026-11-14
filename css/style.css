@@ -253,3 +253,4 @@ footer{padding:40px 0 56px;font-size:14px;color:var(--ink-soft)}
 .chat .disc{font-size:12px;color:var(--ink-soft);padding:6px 16px 8px;border-top:1px solid var(--line)}
 .taobar{display:none;background:var(--ochre);color:#1E1B19;font-size:14px;text-align:center;padding:6px 16px}
 .taobar.show{display:block}
+.expbar{background:#B3261E;color:#fff;font-size:13px;font-weight:700;line-height:1.4;text-align:center;padding:8px 16px}
